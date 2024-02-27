@@ -1,31 +1,37 @@
-import { useState, useMemo } from "react";
-import ReactMde from "react-mde";
-import Showdown from "showdown";
+import { useEffect, useRef } from "react";
+import EasyMDE from "easymde";
+import "easymde/dist/easymde.min.css"; // Import EasyMDE styles
 
 export default function Editor({ tempNoteText, setTempNoteText }) {
-  const [selectedTab, setSelectedTab] = useState("write");
+  const easyMDEEditor = useRef(null);
 
-  const converter = useMemo(() => new Showdown.Converter({
-    tables: true,
-    simplifiedAutoLink: true,
-    strikethrough: true,
-    tasklists: true,
-  }), []); // Dependencies array is empty, meaning it only runs once
+  useEffect(() => {
+    if (!easyMDEEditor.current) return;
+
+    const easyMDE = new EasyMDE({
+      element: easyMDEEditor.current,
+      initialValue: tempNoteText,
+      autoDownloadFontAwesome: false,
+      minHeight: "80vh",
+      status: false, // Disable the status bar
+      toolbar: true, // Enable the toolbar
+      spellChecker: false,
+      forceSync: true,
+      onChange: (instance) => {
+        setTempNoteText(instance.value());
+      },
+    });
+
+    // Clean up
+    return () => {
+      easyMDE.toTextArea();
+      // Removed the line attempting to set easyMDE to null
+    };
+  }, [setTempNoteText]); // Dependency array includes setTempNoteText to ensure sync
 
   return (
     <section className="pane editor">
-      <ReactMde
-        value={tempNoteText}
-        onChange={setTempNoteText}
-        selectedTab={selectedTab}
-        onTabChange={setSelectedTab}
-        generateMarkdownPreview={(markdown) =>
-          Promise.resolve(converter.makeHtml(markdown))
-        }
-        minEditorHeight={80}
-        heightUnits="vh"
-      />
+      <textarea ref={easyMDEEditor}></textarea>
     </section>
   );
 }
-
