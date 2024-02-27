@@ -1,23 +1,22 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { useState, useMemo } from "react";
 import ReactMde from "react-mde";
 import Showdown from "showdown";
 
-const Editor = ({ currentNote, updateNote }) => {
-  const [selectedTab, setSelectedTab] = React.useState("write");
+export default function Editor({ tempNoteText, setTempNoteText }) {
+  const [selectedTab, setSelectedTab] = useState("write");
 
-  const converter = new Showdown.Converter({
+  const converter = useMemo(() => new Showdown.Converter({
     tables: true,
     simplifiedAutoLink: true,
     strikethrough: true,
     tasklists: true,
-  });
+  }), []); // Dependencies array is empty, meaning it only runs once
 
   return (
     <section className="pane editor">
       <ReactMde
-        value={currentNote.body}
-        onChange={updateNote}
+        value={tempNoteText}
+        onChange={setTempNoteText}
         selectedTab={selectedTab}
         onTabChange={setSelectedTab}
         generateMarkdownPreview={(markdown) =>
@@ -28,13 +27,5 @@ const Editor = ({ currentNote, updateNote }) => {
       />
     </section>
   );
-};
+}
 
-Editor.propTypes = {
-  currentNote: PropTypes.shape({
-    body: PropTypes.string.isRequired,
-  }).isRequired,
-  updateNote: PropTypes.func.isRequired,
-};
-
-export default Editor;
