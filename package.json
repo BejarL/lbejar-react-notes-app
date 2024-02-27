@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mui/material": "^5.15.11",
     "easymde": "^2.18.0",
     "firebase": "^10.8.0",
     "react": "^18.2.0",

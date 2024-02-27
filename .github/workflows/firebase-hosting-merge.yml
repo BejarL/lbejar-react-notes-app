@@ -18,3 +18,5 @@ jobs:
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_LBEJAR_NOTES_APP }}'
           channelId: live
           projectId: lbejar-notes-app
+          env:
+          FIREBASE_CLI_EXPERIMENTS: webframeworks
