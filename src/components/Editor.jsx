@@ -1,37 +1,39 @@
-import { useEffect, useRef } from "react";
-import EasyMDE from "easymde";
-import "easymde/dist/easymde.min.css"; // Import EasyMDE styles
+// Import necessary modules from React and styling for the markdown editor.
+import React from "react";
+import ReactMde from "react-mde";
+import "react-mde/lib/styles/css/react-mde-all.css";
+// Import Showdown to convert markdown into HTML.
+import Showdown from "showdown";
 
+// Define a functional component named 'Editor' that receives 'tempNoteText' and 'setTempNoteText' as props.
 export default function Editor({ tempNoteText, setTempNoteText }) {
-  const easyMDEEditor = useRef(null);
+  // State hook for managing the currently selected tab in the editor ('write' or 'preview').
+  const [selectedTab, setSelectedTab] = React.useState("write");
 
-  useEffect(() => {
-    if (!easyMDEEditor.current) return;
+  // Create a new instance of Showdown.Converter to enable markdown to HTML conversion with some options enabled.
+  const converter = new Showdown.Converter({
+    tables: true, // Enable markdown tables.
+    simplifiedAutoLink: true, // Automatically convert URLs into links.
+    strikethrough: true, // Enable strikethrough syntax.
+    tasklists: true, // Enable task list syntax.
+  });
 
-    const easyMDE = new EasyMDE({
-      element: easyMDEEditor.current,
-      initialValue: tempNoteText,
-      autoDownloadFontAwesome: false,
-      minHeight: "80vh",
-      status: false, // Disable the status bar
-      toolbar: true, // Enable the toolbar
-      spellChecker: false,
-      forceSync: true,
-      onChange: (instance) => {
-        setTempNoteText(instance.value());
-      },
-    });
-
-    // Clean up
-    return () => {
-      easyMDE.toTextArea();
-      // Removed the line attempting to set easyMDE to null
-    };
-  }, [setTempNoteText]); // Dependency array includes setTempNoteText to ensure sync
-
+  // Render the component.
   return (
     <section className="pane editor">
-      <textarea ref={easyMDEEditor}></textarea>
+      {/* ReactMde component for Markdown editing with various props configured. */}
+      <ReactMde
+        value={tempNoteText} // The current text of the note.
+        onChange={setTempNoteText} // Function to call when the text changes, updating the state in the parent component.
+        selectedTab={selectedTab} // The currently selected tab ('write' or 'preview').
+        onTabChange={setSelectedTab} // Function to update the state when the tab changes.
+        generateMarkdownPreview={(markdown) =>
+          // A function to convert the markdown text to HTML for preview. It returns a promise that resolves to the HTML string.
+          Promise.resolve(converter.makeHtml(markdown))
+        }
+        minEditorHeight={80} // Minimum height of the editor component.
+        heightUnits="vh" // Height unit for the editor, 'vh' represents a percentage of the viewport height.
+      />
     </section>
   );
 }
