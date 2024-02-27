@@ -1,6 +1,6 @@
 function Sidebar({
   notes,
-  currentNoteId, // Use currentNoteId instead of currentNote
+  currentNoteId, // Use currentNoteId instead of currentNote  
   setCurrentNoteId,
   deleteNote,
   newNote,
